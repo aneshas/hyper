@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"github.com/dave/jennifer/jen"
 	"github.com/iancoleman/strcase"
+	"go/ast"
+	"go/parser"
+	"go/token"
+	"os"
 	"path"
 )
 
@@ -184,4 +188,48 @@ func genUCHandler(location string, app string, ns string, mod string, uc string,
 	}
 
 	return f.Save(path.Join(hDir, fmt.Sprintf("%s.go", strcase.ToSnake(uc))))
+}
+
+func GenStore(location string, app string, ns string, mod string) error {
+	data, err := os.ReadFile(path.Join(location, app, "pkg", ns, ns+".go"))
+	if err != nil {
+		// if errors.Is(err, fs.PathError) {
+		// 	return nil
+		// }
+
+		return err
+	}
+
+	fset := token.NewFileSet()
+
+	file, err := parser.ParseFile(fset, "entity", data, parser.ParseComments)
+	if err != nil {
+		return err
+	}
+
+	ast.Inspect(file, func(x ast.Node) bool {
+		s, ok := x.(*ast.TypeSpec)
+		if !ok {
+			return true
+		}
+
+		if s.Type == nil {
+			return true
+		}
+
+		i, ok := s.Type.(*ast.InterfaceType)
+		if !ok {
+			return true
+		}
+
+		if s.Name.Name != "Store" {
+			return true
+		}
+
+		_ = i
+
+		return true
+	})
+
+	return nil
 }
