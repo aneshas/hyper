@@ -1,88 +1,32 @@
 package hyper
 
 import (
-	"github.com/dave/jennifer/jen"
-	"os"
-	"os/exec"
 	"path"
 )
 
-func InitApp(location, name, modPath string) error {
-	appDir := path.Join(location, name)
-
-	err := mkDir(appDir)
-	if err != nil {
-		return err
-	}
-
-	err = initMod(modPath, appDir)
-	if err != nil {
-		return err
-	}
-
-	cmdDir := path.Join(appDir, "cmd", name)
-
-	err = mkDir(cmdDir)
-	if err != nil {
-		return err
-	}
-
-	return writeMain(path.Join(cmdDir, "main.go"))
+type AppStore interface {
+	CurrentApp() (*App, error)
 }
 
-func mkDir(p string) error {
-	return os.MkdirAll(p, 0755)
+func NewApp(location string, name string, mod string) App {
+	return App{Location: location, NameOnDisk: name, Mod: mod}
 }
 
-func initMod(modPath string, appDir string) error {
-	cmd := exec.Command("go", "mod", "init", modPath)
-
-	cmd.Dir = appDir
-	cmd.Stdout = os.Stdout
-
-	err := cmd.Run()
-	if err != nil {
-		return err
-	}
-	return nil
+type App struct {
+	// Optional
+	Location   string
+	NameOnDisk string
+	Mod        string
 }
 
-func modTidy(appDir string) error {
-	cmd := exec.Command("go", "mod", "tidy")
-
-	cmd.Dir = appDir
-	cmd.Stdout = os.Stdout
-
-	err := cmd.Run()
-	if err != nil {
-		return err
-	}
-	return nil
+func (a App) Dir() string {
+	return path.Join(a.Location, a.NameOnDisk)
 }
 
-func writeMain(p string) error {
-	echo := "github.com/labstack/echo/v4"
-	tx := "github.com/aneshas/tx"
+func (a App) CMDDir() string {
+	return path.Join(a.Dir(), "cmd", a.NameOnDisk)
+}
 
-	f := jen.NewFile("main")
-
-	f.ImportName(echo, "echo")
-	f.ImportName(tx, "")
-
-	f.Func().
-		Id("main").
-		Params().
-		Block(
-			jen.Id("e").Op(":=").Qual(echo, "New").Call(),
-			f.Line(),
-			jen.Var().Id("conn").Op("*").Qual("database/sql", "DB"),
-			f.Line(),
-			jen.Id("transactor").Op(":=").Qual(tx, "New").Call(jen.Id("conn")),
-			f.Line(),
-			jen.Id("_").Op("=").Id("transactor"),
-			f.Line(),
-			jen.Qual("log", "Fatal").Call(jen.Id("e").Dot("Start").Call(jen.Lit(":8080"))),
-		)
-
-	return f.Save(p)
+func (a App) NewUC(ns string, name string, req string, resp string) UC {
+	return NewUC(ns, name, req, resp, a.Dir())
 }

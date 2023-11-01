@@ -1,45 +1,44 @@
 package main
 
 import (
+	"context"
 	"github.com/aneshas/hyper"
 	"log"
 	"os"
-	"path"
 )
 
 func main() {
-	loc, _ := os.Getwd()
-	appPath := path.Join(loc, "tmp")
 	mod := "github.com/hyper/webapp"
 
-	// err := os.RemoveAll(appPath)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	//
-	// err = hyper.InitApp(appPath, "webapp", mod)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	//
-	// // TODO - This will be run from inside project so path, name, mod would be parsed
-	// // err = hyper.GenUC(appPath, "task", "ScheduleTask", "", "")
-	// err = hyper.GenUC(appPath, "webapp", "task", mod, "ScheduleTask", "UnscheduledTask", "ScheduledTask")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	//
-	// err = hyper.GenUC(appPath, "webapp", "task", mod, "CancelTask", "ToCancel", "")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	//
-	// err = hyper.GenUC(appPath, "webapp", "employee", mod, "ListEmployees", "ListFilter", "Employees")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	err := os.RemoveAll("webapp")
+	if err != nil {
+		log.Println(err)
+	}
 
-	err := hyper.GenStore(appPath, "webapp", "task", mod)
+	ctx := context.Background()
+
+	fs := new(hyper.DiskFS)
+	tools := new(hyper.GoCLI)
+	gen := hyper.NewFuncGen(fs, tools)
+
+	initApp := hyper.NewInitApp(fs, gen, tools)
+	genUC := hyper.NewGenUC(fs, gen)
+
+	err = initApp(ctx, hyper.AppDetails{
+		Name: "webapp",
+		Mod:  mod,
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = genUC(ctx, hyper.UCDetails{
+		NS:     "task",
+		UCName: "ScheduleTask",
+		Req:    "UnscheduledTask",
+		Resp:   "ScheduledTask",
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
