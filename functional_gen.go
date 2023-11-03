@@ -8,6 +8,11 @@ import (
 	"path"
 )
 
+const (
+	echoPkg = "github.com/labstack/echo/v4"
+	txPkg   = "github.com/aneshas/tx"
+)
+
 func NewFuncGen(fs FS, tools GoTools) *FuncGen {
 	return &FuncGen{fs: fs, tools: tools}
 }
@@ -18,23 +23,20 @@ type FuncGen struct {
 }
 
 func (fg *FuncGen) GenMain(app App) error {
-	echo := "github.com/labstack/echo/v4"
-	tx := "github.com/aneshas/tx"
-
 	f := jen.NewFile("main")
 
-	f.ImportName(echo, "echo")
-	f.ImportName(tx, "")
+	f.ImportName(echoPkg, "echo")
+	f.ImportName(txPkg, "")
 
 	f.Func().
 		Id("main").
 		Params().
 		Block(
-			jen.Id("e").Op(":=").Qual(echo, "New").Call(),
+			jen.Id("e").Op(":=").Qual(echoPkg, "New").Call(),
 			f.Line(),
 			jen.Var().Id("conn").Op("*").Qual("database/sql", "DB"),
 			f.Line(),
-			jen.Id("transactor").Op(":=").Qual(tx, "New").Call(jen.Id("conn")),
+			jen.Id("transactor").Op(":=").Qual(txPkg, "New").Call(jen.Id("conn")),
 			f.Line(),
 			jen.Id("_").Op("=").Id("transactor"),
 			f.Line(),
@@ -100,7 +102,7 @@ func (fg *FuncGen) GenUC(ctx context.Context, app App, uc UC) error {
 
 	ucn := fmt.Sprintf("New%s", uc.Name)
 
-	f.ImportName("github.com/aneshas/tx", "")
+	f.ImportName(txPkg, "")
 
 	rets := []jen.Code{
 		jen.Nil(),
@@ -114,7 +116,7 @@ func (fg *FuncGen) GenUC(ctx context.Context, app App, uc UC) error {
 	f.Func().
 		Id(ucn).
 		Params(
-			jen.Id("tx").Qual("github.com/aneshas/tx", "Transactor"),
+			jen.Id("tx").Qual(txPkg, "Transactor"),
 		).
 		Params(jen.Id(ucf)).
 		Block(
@@ -136,7 +138,7 @@ func (fg *FuncGen) GenUC(ctx context.Context, app App, uc UC) error {
 		return err
 	}
 
-	err = fg.genUCHandler(app.Location, app.NameOnDisk, uc.NS, app.Mod, uc.Name, uc.Req, uc.Resp)
+	err = fg.genUCHandler(app, uc)
 	if err != nil {
 		return err
 	}
@@ -144,9 +146,8 @@ func (fg *FuncGen) GenUC(ctx context.Context, app App, uc UC) error {
 	return fg.tools.ModTidy(app)
 }
 
-func (fg *FuncGen) genUCHandler(location string, app string, ns string, mod string, uc string, req string, resp string) error {
-	appDir := path.Join(location, app)
-	hDir := path.Join(appDir, "internal", "http")
+func (fg *FuncGen) genUCHandler(app App, uc UC) error {
+	hDir := path.Join(app.Dir(), "internal", "http")
 
 	f := jen.NewFile("http")
 
@@ -166,24 +167,23 @@ func (fg *FuncGen) genUCHandler(location string, app string, ns string, mod stri
 	// 	)
 	// }
 
-	echo := "github.com/labstack/echo/v4"
-	nsPkg := fmt.Sprintf("%s/pkg/%s", mod, ns)
+	nsPkg := fmt.Sprintf("%s/pkg/%s", app.Mod, uc.NS)
 
-	f.ImportName(echo, "echo")
+	f.ImportName(echoPkg, "echo")
 
-	hn := fmt.Sprintf("Reg%s", uc)
-	hnn := fmt.Sprintf("New%s", uc)
+	hn := fmt.Sprintf("Reg%s", uc.Name)
+	hnn := fmt.Sprintf("New%s", uc.Name)
 
 	f.Func().Id(hn).
 		Params(
-			jen.Id("e").Op("*").Qual(echo, "Echo"),
-			jen.Id(strcase.ToLowerCamel(uc)).Qual(nsPkg, fmt.Sprintf("%sFunc", uc)),
-			jen.Id("mw").Op("...").Qual(echo, "MiddlewareFunc"),
+			jen.Id("e").Op("*").Qual(echoPkg, "Echo"),
+			jen.Id(strcase.ToLowerCamel(uc.Name)).Qual(nsPkg, fmt.Sprintf("%sFunc", uc.Name)),
+			jen.Id("mw").Op("...").Qual(echoPkg, "MiddlewareFunc"),
 		).Block(
 		jen.Id("e").Dot("GET").Call(
-			jen.Lit(fmt.Sprintf("%s/%s", ns, strcase.ToLowerCamel(uc))),
+			jen.Lit(fmt.Sprintf("%s/%s", uc.NS, strcase.ToLowerCamel(uc.Name))),
 			jen.Id(hnn).Call(
-				jen.Id(strcase.ToLowerCamel(uc)),
+				jen.Id(strcase.ToLowerCamel(uc.Name)),
 			),
 			jen.Id("mw").Op("..."),
 		),
@@ -197,14 +197,14 @@ func (fg *FuncGen) genUCHandler(location string, app string, ns string, mod stri
 		Func().
 		Id(hnn).
 		Params(
-			jen.Id(strcase.ToLowerCamel(uc)).Qual(nsPkg, fmt.Sprintf("%sFunc", uc)),
+			jen.Id(strcase.ToLowerCamel(uc.Name)).Qual(nsPkg, fmt.Sprintf("%sFunc", uc.Name)),
 		).
 		Params(
-			jen.Qual(echo, "HandlerFunc"),
+			jen.Qual(echoPkg, "HandlerFunc"),
 		).Block(
 		jen.Return(
 			jen.Func().Params(
-				jen.Id("c").Qual(echo, "Context"),
+				jen.Id("c").Qual(echoPkg, "Context"),
 			).Params(jen.Error()).Block(
 				jen.Return(
 					jen.Id("c").Dot("String").Call(
@@ -221,5 +221,5 @@ func (fg *FuncGen) genUCHandler(location string, app string, ns string, mod stri
 		return err
 	}
 
-	return f.Save(path.Join(hDir, fmt.Sprintf("%s.go", strcase.ToSnake(uc))))
+	return f.Save(path.Join(hDir, fmt.Sprintf("%s.go", strcase.ToSnake(uc.Name))))
 }
