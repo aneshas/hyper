@@ -13,13 +13,14 @@ const (
 	txPkg   = "github.com/aneshas/tx"
 )
 
-func NewFuncGen(fs FS, tools GoTools) *FuncGen {
-	return &FuncGen{fs: fs, tools: tools}
+func NewFuncGen(fs FS, parser Parser, tools GoTools) *FuncGen {
+	return &FuncGen{fs: fs, tools: tools, parser: parser}
 }
 
 type FuncGen struct {
-	fs    FS
-	tools GoTools
+	fs     FS
+	tools  GoTools
+	parser Parser
 }
 
 func (fg *FuncGen) GenMain(app App) error {
@@ -112,12 +113,28 @@ func (fg *FuncGen) GenUC(ctx context.Context, app App, uc UC) error {
 		rets = append(rets, jen.Nil())
 	}
 
+	ucParams := []jen.Code{
+		jen.Id("tx").Qual(txPkg, "Transactor"),
+	}
+
+	has, err := fg.parser.HasStore(app, uc)
+	if err != nil {
+		return err
+	}
+
+	if has {
+		// TODO - Use name from the store details
+
+		ucParams = append(
+			ucParams,
+			jen.Id("store").Id("Store"),
+		)
+	}
+
 	f.Comment(fmt.Sprintf("%s instantiates %s use case", ucn, uc.Name))
 	f.Func().
 		Id(ucn).
-		Params(
-			jen.Id("tx").Qual(txPkg, "Transactor"),
-		).
+		Params(ucParams...).
 		Params(jen.Id(ucf)).
 		Block(
 			jen.Return(
@@ -128,7 +145,7 @@ func (fg *FuncGen) GenUC(ctx context.Context, app App, uc UC) error {
 			),
 		)
 
-	err := fg.fs.MkAppDir(ucDir)
+	err = fg.fs.MkAppDir(ucDir)
 	if err != nil {
 		return err
 	}
@@ -147,7 +164,7 @@ func (fg *FuncGen) GenUC(ctx context.Context, app App, uc UC) error {
 }
 
 func (fg *FuncGen) genUCHandler(app App, uc UC) error {
-	hDir := path.Join(app.Dir(), "internal", "http")
+	hDir := path.Join(app.Dir(), "internal", "echo")
 
 	f := jen.NewFile("http")
 

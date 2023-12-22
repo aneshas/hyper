@@ -15,9 +15,9 @@ func (d *DiskFS) CurrentApp() (*App, error) {
 	// TODO - This will be run from inside project so path, name, mod would be parsed
 	// loc, _ := os.Getwd()
 	// appPath := path.Join(loc, "tmp")
-	mod := "github.com/hyper/webapp"
+	mod := "github.com/wisag/lucie"
 
-	app := NewApp("", "webapp", mod)
+	app := NewApp("", "lucie", mod)
 
 	return &app, nil
 }
