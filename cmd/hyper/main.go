@@ -27,8 +27,8 @@ func main() {
 	initApp := hyper.NewInitApp(fs, gen, tools)
 	genUC := hyper.NewGenUC(fs, gen, storeGen)
 
-	_ = mod
 	_ = initApp
+	_ = mod
 
 	// err = initApp(ctx, hyper.AppDetails{
 	// 	Name: "lucie",
@@ -39,11 +39,29 @@ func main() {
 	// 	log.Fatal(err)
 	// }
 
+	// TODO - Concentrate on generating the skeleton and making it extendable so
+	// you can then only write modules for various adapters etc ...
+	// - maybe in functional style / data oriented style eg. every module gets the whole app definition
+	//   and modifies it as it sees fit
+	// eg. save rendering for the end - only build a representation
+	// don't focus on different types of use cases, make it opinionated instead focus on extendability with different adapters
+	// databases etc ...
+
+	// _, err = genUC(ctx, hyper.UCDetails{
+	// 	NS:     "contract",
+	// 	UCName: "ContactInfo",
+	// 	Req:    "ContactInfoReq",
+	// 	Resp:   "ContactInfoResp",
+	// })
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
 	_, err = genUC(ctx, hyper.UCDetails{
 		NS:     "contract",
-		UCName: "ContactInfo",
-		Req:    "ContactInfoReq",
-		Resp:   "ContactInfoResp",
+		UCName: "RemoveContact",
+		Req:    "ContactInfoReqB",
+		Resp:   "ContactInfoRespC",
 	})
 	if err != nil {
 		log.Fatal(err)

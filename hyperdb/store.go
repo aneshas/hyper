@@ -1,7 +1,7 @@
 package hyperdb
 
 // TODO - Move this to a separate repo?
-// implementation should go to hyper boiler
+// implementation should go to hyper boiler - but leave the Store interface here
 
 import (
 	"context"
