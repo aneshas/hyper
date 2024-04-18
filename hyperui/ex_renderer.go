@@ -1,4 +1,4 @@
-package hyper
+package hyperui
 
 import (
 	"fmt"
@@ -33,5 +33,5 @@ func (r *Renderer) Render(w io.Writer, name string, data interface{}, c echo.Con
 		bag.Context = c
 	}
 
-	return r.tpl.ExecuteTemplate(w, fmt.Sprintf("%s.go.tpl", name), bag)
+	return r.tpl.ExecuteTemplate(w, fmt.Sprintf("%s.go.tpl", name), data)
 }

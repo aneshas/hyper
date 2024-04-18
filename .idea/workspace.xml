@@ -5,14 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a7613709-ff4a-4e87-9ffb-4c52c1288d17" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/hyper/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/hyper/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hyperdb/go.mod" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hyperdb/go.sum" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/hyperdb/store.go" beforeDir="false" afterPath="$PROJECT_DIR$/hyperdb/store.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hyperui/echo_errors.go" beforeDir="false" afterPath="$PROJECT_DIR$/hyperui/echo_errors.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hyperui/ex_renderer.go" beforeDir="false" afterPath="$PROJECT_DIR$/hyperui/ex_renderer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hyperui/view_bag.go" beforeDir="false" afterPath="$PROJECT_DIR$/hyperui/view_bag.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
