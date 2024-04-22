@@ -9,11 +9,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func NewRenderer() (*Renderer, error) {
+func NewRenderer(tplPath string) (*Renderer, error) {
 	xt := extemplate.New().
 		Funcs(sprig.FuncMap())
 
-	err := xt.ParseDir("views/", []string{".tpl"})
+	err := xt.ParseDir(tplPath, []string{".tpl"})
 	if err != nil {
 		return nil, err
 	}

@@ -5,7 +5,7 @@ import "github.com/labstack/echo/v4"
 func Defaults(e *echo.Echo) error {
 	e.HTTPErrorHandler = NewErrorHandler()
 
-	renderer, err := NewRenderer()
+	renderer, err := NewRenderer("views/")
 	if err != nil {
 		return err
 	}

@@ -13,26 +13,28 @@ func NewErrorHandler() echo.HTTPErrorHandler {
 		var appErr Error
 
 		if errors.As(err, &appErr) {
-			_ = c.Render(http.StatusOK, appErr.tpl, appErr.Bag)
+			_ = c.Render(appErr.code, appErr.tpl, appErr.Bag)
 
 			return
 		}
 
-		_ = c.Render(http.StatusOK, "server_error", NewBag().WithError("ServerError", err.Error()))
+		_ = c.Render(http.StatusInternalServerError, "server_error", NewBag().WithError("ServerError", err.Error()))
 	}
 }
 
 func E() Error {
 	return Error{
-		tpl: "server_error",
+		code: http.StatusBadRequest,
+		tpl:  "server_error",
 	}
 }
 
 type Error struct {
 	Bag
 
-	err error
-	tpl string
+	code int
+	err  error
+	tpl  string
 }
 
 func (ve Error) Error() string {
@@ -41,6 +43,12 @@ func (ve Error) Error() string {
 	}
 
 	return "unknown error"
+}
+
+func (ve Error) WithCode(code int) Error {
+	ve.code = code
+
+	return ve
 }
 
 func (ve Error) WithTpl(name string) Error {
