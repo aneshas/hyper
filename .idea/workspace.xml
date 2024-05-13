@@ -6,9 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a7613709-ff4a-4e87-9ffb-4c52c1288d17" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hyperui/echo.go" beforeDir="false" afterPath="$PROJECT_DIR$/hyperui/echo.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hyperui/echo_errors.go" beforeDir="false" afterPath="$PROJECT_DIR$/hyperui/echo_errors.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hyperui/ex_renderer.go" beforeDir="false" afterPath="$PROJECT_DIR$/hyperui/ex_renderer.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -107,16 +105,5 @@
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/hyperui/ex_renderer.go</url>
-          <line>31</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

@@ -3,6 +3,7 @@ package hyperui
 import (
 	"errors"
 	"net/http"
+	"sync"
 
 	"github.com/labstack/echo/v4"
 )
@@ -18,7 +19,9 @@ func NewErrorHandler() echo.HTTPErrorHandler {
 			return
 		}
 
-		_ = c.Render(http.StatusInternalServerError, "server_error", NewBag().WithError("ServerError", err.Error()))
+		sync.OnceFunc(func() {
+			_ = c.Render(http.StatusOK, "server_error", NewBag().WithError("ServerError", err.Error()))
+		})()
 	}
 }
 
