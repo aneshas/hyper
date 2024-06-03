@@ -2,6 +2,7 @@ package hyperui
 
 import (
 	"fmt"
+	"github.com/aneshas/hyper/hyperui/flash"
 	"io"
 
 	"github.com/Masterminds/sprig/v3"
@@ -11,7 +12,8 @@ import (
 
 func NewRenderer(tplPath string) (*Renderer, error) {
 	xt := extemplate.New().
-		Funcs(sprig.FuncMap())
+		Funcs(sprig.FuncMap()).
+		Funcs(flash.FuncMap())
 
 	err := xt.ParseDir(tplPath, []string{".tpl"})
 	if err != nil {
@@ -31,6 +33,7 @@ func (r *Renderer) Render(w io.Writer, name string, data interface{}, c echo.Con
 	bag, ok := data.(Bag)
 	if ok {
 		bag.Context = c
+		data = bag
 	}
 
 	return r.tpl.ExecuteTemplate(w, fmt.Sprintf("%s.go.tpl", name), data)
