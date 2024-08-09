@@ -15,7 +15,7 @@ const (
 	flashErr     = "hyper_flash_error"
 )
 
-func NewMessage(msg string, kv ...string) Message {
+func newMessage(msg string, kv ...string) Message {
 	m := Message{
 		Message: msg,
 		Params:  make(map[string]string),
@@ -52,7 +52,7 @@ func Error(c echo.Context, msg string, kv ...string) {
 }
 
 func set(c echo.Context, name, msg string, kv ...string) {
-	m := NewMessage(msg, kv...)
+	m := newMessage(msg, kv...)
 
 	c.SetCookie(&http.Cookie{
 		Name:  name,

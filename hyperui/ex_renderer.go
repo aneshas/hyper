@@ -33,7 +33,7 @@ func (r *Renderer) Render(w io.Writer, name string, data interface{}, c echo.Con
 	bag, ok := data.(Bag)
 	if ok {
 		bag.Context = c
-		data = bag
+		data = bag.WithKV("Page", name)
 	}
 
 	return r.tpl.ExecuteTemplate(w, fmt.Sprintf("%s.go.tpl", name), data)
