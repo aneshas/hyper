@@ -27,6 +27,7 @@ func NewErrorHandler() echo.HTTPErrorHandler {
 
 func E() Error {
 	return Error{
+		Bag:  NewBag(),
 		code: http.StatusBadRequest,
 		tpl:  "server_error",
 	}
