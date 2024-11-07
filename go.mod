@@ -2,7 +2,7 @@ module github.com/aneshas/hyper
 
 go 1.21.0
 
-require github.com/dave/jennifer v1.7.0
+require github.com/dave/jennifer v1.7.1
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.2
