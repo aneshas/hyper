@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a7613709-ff4a-4e87-9ffb-4c52c1288d17" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hyperui/echo_errors.go" beforeDir="false" afterPath="$PROJECT_DIR$/hyperui/echo_errors.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

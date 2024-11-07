@@ -17,10 +17,10 @@ func NewErrorHandler() echo.HTTPErrorHandler {
 			return
 		}
 
-		if c.Response().Status == http.StatusUnauthorized {
-			_ = c.String(http.StatusUnauthorized, "Unauthorized")
+		var echoErr *echo.HTTPError
 
-			return
+		if errors.As(err, &echoErr) {
+			_ = c.String(echoErr.Code, echoErr.Error())
 		}
 
 		_ = c.Render(http.StatusOK, "server_error", NewBag().WithError("ServerError", err.Error()))
