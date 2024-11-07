@@ -2,10 +2,8 @@ package hyperui
 
 import (
 	"errors"
-	"net/http"
-	"sync"
-
 	"github.com/labstack/echo/v4"
+	"net/http"
 )
 
 // NewErrorHandler creates custom http error handler
@@ -19,9 +17,13 @@ func NewErrorHandler() echo.HTTPErrorHandler {
 			return
 		}
 
-		sync.OnceFunc(func() {
-			_ = c.Render(http.StatusOK, "server_error", NewBag().WithError("ServerError", err.Error()))
-		})()
+		if c.Response().Status == http.StatusUnauthorized {
+			_ = c.String(http.StatusUnauthorized, "Unauthorized")
+
+			return
+		}
+
+		_ = c.Render(http.StatusOK, "server_error", NewBag().WithError("ServerError", err.Error()))
 	}
 }
 
